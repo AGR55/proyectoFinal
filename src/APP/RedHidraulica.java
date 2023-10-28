@@ -11,6 +11,11 @@ public class RedHidraulica {
     private int cantidadDepositos = getCantidadDepositos();
     private int cantidadMotores = getCantidadMotores();
 
+    public RedHidraulica(List<Motores> motores) {
+        this.depositos = new ArrayList<Depositos>();
+        this.motores = motores;
+    }
+
     public int getCantidadDepositos() {
         int aux = 0;
         for (int i = 0; i < depositos.size(); i++) {
@@ -31,13 +36,12 @@ public class RedHidraulica {
         return aux;
     }
 
-    public RedHidraulica(List<Motores> motores) {
-        this.depositos = new ArrayList<Depositos>();
-        this.motores = motores;
-    }
-
     public List<Depositos> getDepositos() {
         return depositos;
+    }
+
+    public List<Motores> getMotores() {
+        return motores;
     }
 
     public List<Cisternas> getCisternas() {
@@ -62,14 +66,27 @@ public class RedHidraulica {
         return tanques;
     }
 
-    public void infoDepositos(String tipoAbasto) {
+    public List<Turbinas> getTurbinas() {
+        List<Turbinas> turbinas = new ArrayList<>();
+
+        for (int i = 0; i < cantidadMotores; i++) {
+            if (motores.get(i) instanceof Turbinas) {
+                turbinas.add((Turbinas) motores.get(i));
+            }
+        }
+        return turbinas;
+    }
+
+    public List<String> infoDepositos(String tipoAbasto) {
+        List<String> lista = null;
         for (int i = 0; i < cantidadDepositos; i++) {
             Serial serial = new Serial();
             if (depositos.get(i).getEstado().equals("Mal") || depositos.get(i).getEstado().equals("Regular")
                     && depositos.get(i).getTipoAbasto().equals(tipoAbasto)) {
-                serial.guardarTanquesRegularOMalEstado(depositos);
+                lista = serial.guardarTanquesRegularOMalEstado(depositos);
             }
         }
+        return lista;
     }
 
     public List<Integer> capacidadOrdenada() {
@@ -79,6 +96,7 @@ public class RedHidraulica {
         List<Integer> capacidadOrdenada = new ArrayList<>();
         int cantidadCisternas = getCisternas().size();
         int cantidadTanques = getTanques().size();
+        String[] clas = { "Simple", "Compuesta" };
 
         for (int i = 0; i < orden.length; i++) {
             for (int j = 0; j < cantidadTanques; j++) {
@@ -87,14 +105,11 @@ public class RedHidraulica {
                 }
             }
         }
-        for (int i = 0; i < cantidadCisternas; i++) {
-            if (auxCis.get(i) instanceof Simples) {
-                capacidadOrdenada.add(auxCis.get(i).getCapacidad());
-            }
-        }
-        for (int i = 0; i < cantidadCisternas; i++) {
-            if (auxCis.get(i) instanceof Compuestas) {
-                capacidadOrdenada.add(auxCis.get(i).getCapacidad());
+        for (int i = 0; i < clas.length; i++) {
+            for (int j = 0; j < cantidadCisternas; j++) {
+                if (auxCis.get(j).clasificacion().equals(clas[i])) {
+                    capacidadOrdenada.add(auxCis.get(j).getCapacidad());
+                }
             }
         }
         return capacidadOrdenada;
@@ -124,5 +139,47 @@ public class RedHidraulica {
             info[i] = "La cantidad de " + medios[i] + " es" + cantidades[i];
         }
         return info;
+    }
+
+    public double tiempoPromedio() {
+        double tiempo = 0;
+
+        for (int i = 0; i < cantidadMotores; i++) {
+            if (motores.get(i) instanceof BombasDeAgua) {
+                if (((BombasDeAgua) motores.get(i)).estado.equals("Bueno")) {
+                    tiempo += ((BombasDeAgua) motores.get(i)).getTiempoBombeo();
+                }
+            }
+        }
+        return tiempo / cantidadMotores;
+    }
+
+    public List<String> estadoTurbinas() {
+        List<String> estados = new ArrayList<>();
+        List<Turbinas> turbinasAux = getTurbinas();
+        int cantidadTurbinas = 0;
+        int indice = 0;
+        int mayor = 0;
+
+        for (int i = 0; i < turbinasAux.size(); i++) {
+            if (turbinasAux.get(i) != null) {
+                cantidadTurbinas++;
+            }
+        }
+
+        for (int i = 0; i < cantidadTurbinas; i++) {
+            if (turbinasAux.get(i).getFuerza() > mayor)  {
+                mayor = turbinasAux.get(i).getFuerza();
+                indice = i;
+            }
+        }
+        estados.add(turbinasAux.get(indice).getEstado());
+
+        for (int i = 0; i < cantidadTurbinas; i++) {
+            if (turbinasAux.get(i).getFuerza() == mayor) {
+                estados.add(turbinasAux.get(i).getEstado());
+            }
+        }
+        return estados;
     }
 }
