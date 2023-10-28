@@ -12,7 +12,7 @@ import APP.Tanques;
 
 public class Serial {
 
-    public List<String> guardarTanquesRegularOMalEstado(List<Depositos> depositos) {
+    public List<String> guardarTanquesRegularOMalEstado(List<Depositos> depositos) throws IOException {
         List<String> info = new ArrayList<>();
         try {
             FileWriter oos = new FileWriter("verificar.dat");
@@ -47,7 +47,7 @@ public class Serial {
         }
     }
 
-    public void conocerCapacidadTotalCisternasInfo(List<Cisternas> cisternas) {
+    public void conocerCapacidadTotalCisternasInfo(List<Cisternas> cisternas) throws IOException {
         try {
             FileWriter oos = new FileWriter("cisternas.dat");
             String line = "";
