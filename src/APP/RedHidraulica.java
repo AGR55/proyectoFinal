@@ -1,5 +1,6 @@
 package APP;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class RedHidraulica {
         return turbinas;
     }
 
-    public List<String> infoDepositos(String tipoAbasto) {
+    public List<String> infoDepositos(String tipoAbasto) throws IOException {
         List<String> lista = null;
         for (int i = 0; i < cantidadDepositos; i++) {
             Serial serial = new Serial();
@@ -168,7 +169,7 @@ public class RedHidraulica {
         }
 
         for (int i = 0; i < cantidadTurbinas; i++) {
-            if (turbinasAux.get(i).getFuerza() > mayor)  {
+            if (turbinasAux.get(i).getFuerza() > mayor) {
                 mayor = turbinasAux.get(i).getFuerza();
                 indice = i;
             }
@@ -181,5 +182,30 @@ public class RedHidraulica {
             }
         }
         return estados;
+    }
+
+    public void guardarCapacidadCisternas(int compartimentos, String forma) throws IOException {
+        List<Cisternas> cisternasAux = getCisternas();
+        int cantidadCisternas = 0;
+        Serial serial = new Serial();
+
+        for (int i = 0; i < cisternasAux.size(); i++) {
+            if (cisternasAux.get(i) != null) {
+                cantidadCisternas++;
+            }
+        }
+
+        for (int i = 0; i < cantidadCisternas; i++) {
+            if (cisternasAux.get(i) instanceof Simples) {
+                if (((Simples) cisternasAux.get(i)).getForma() != forma) {
+                    cisternasAux.remove(i);
+                }
+            } else {
+                if (((Compuestas) cisternasAux.get(i)).getCantidadCompartimentos() != compartimentos) {
+                    cisternasAux.remove(i);
+                }
+            }
+        }
+        serial.conocerCapacidadTotalCisternasInfo(cisternasAux);
     }
 }
