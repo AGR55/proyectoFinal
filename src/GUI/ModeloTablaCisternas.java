@@ -2,16 +2,16 @@ package GUI;
 
 import APP.Cisternas;
 import APP.Compuestas;
-import APP.Depositos;
 import APP.Simples;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
-public class ModeloTabla1 extends AbstractTableModel {
+public class ModeloTablaCisternas extends AbstractTableModel {
     ArrayList<Cisternas> cisternas;
+    String[] titulos={"Capacidad", "Estado", "Tipo de abasto", "Forma", "Cantidad de compartimentos"};
 
-    public ModeloTabla1(ArrayList<Cisternas> cisternas) {
+    public ModeloTablaCisternas(ArrayList<Cisternas> cisternas) {
         this.cisternas = cisternas;
     }
 
@@ -38,5 +38,7 @@ public class ModeloTabla1 extends AbstractTableModel {
         }
     }
 
-
+    public String getColumnName(int colums){
+        return titulos[colums];
+    }
 }
